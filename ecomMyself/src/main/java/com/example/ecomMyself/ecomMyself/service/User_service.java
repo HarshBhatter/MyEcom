@@ -36,7 +36,7 @@ public class User_service {
         em.refresh(user);
     }
 
-    public Users finfByUserName(String username)
+    public Users findByUserName(String username)
     {
         return user_repo.findByUsername(username);
     }

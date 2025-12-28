@@ -1,19 +1,18 @@
 package com.example.ecomMyself.ecomMyself.controller;
 
+import com.example.ecomMyself.ecomMyself.model.Product;
 import com.example.ecomMyself.ecomMyself.repository.User_Repo;
-import com.example.ecomMyself.ecomMyself.service.MyUserDetailService;
-import com.example.ecomMyself.ecomMyself.service.UserPrincipal;
+import com.example.ecomMyself.ecomMyself.service.*;
 import com.example.ecomMyself.ecomMyself.model.Users;
-import com.example.ecomMyself.ecomMyself.service.JwtService;
-import com.example.ecomMyself.ecomMyself.service.User_service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 public class mainController {
@@ -26,6 +25,8 @@ public class mainController {
     @Autowired
     private User_Repo user_repo;
     @Autowired
+    private Products_Service products_service;
+    @Autowired
     AuthenticationManager authenticationManager;
     @GetMapping("/")
     public String home()
@@ -37,7 +38,8 @@ public class mainController {
         try {
             Users savedUser = user_service.save(user);
             return ResponseEntity.ok(savedUser);
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             return ResponseEntity
                     .badRequest()
@@ -47,11 +49,12 @@ public class mainController {
 
     @PostMapping("login")
     public String login(@RequestBody Users user) {
+        System.out.println("Login");
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
 
         if(authentication.isAuthenticated()) {
-            Users user2=user_service.finfByUserName(user.getUsername());
+            Users user2=user_service.findByUserName(user.getUsername());
             return jwtService.generateToken(user.getUsername(), user2.getVersion());
         }
         else
@@ -67,5 +70,47 @@ public class mainController {
             return "logging out";
         }
         return "logged out";
+    }
+    @GetMapping("All")
+    public ResponseEntity<?> products()
+    {
+        try {
+            List<Product> products=products_service.getAll();
+            return ResponseEntity.ok(products);
+        }
+        catch (Exception e)
+        {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
+    }
+    @GetMapping("Mens")
+    public ResponseEntity<?> mensproduct()
+    {
+        try {
+            List<Product> products=products_service.getMenAll();
+            return ResponseEntity.ok(products);
+        }
+        catch (Exception e)
+        {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
+    }
+    @GetMapping("Womens")
+    public ResponseEntity<?> womensproduct()
+    {
+        try {
+            List<Product> products=products_service.getWomenAll();
+            return ResponseEntity.ok(products);
+        }
+        catch (Exception e)
+        {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
     }
 }
