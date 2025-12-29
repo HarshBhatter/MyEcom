@@ -8,6 +8,5 @@ import java.util.List;
 
 @Repository
 public interface Product_Repo extends JpaRepository<Product,Integer> {
-
     List<Product> findAllByGender(String gender);
 }

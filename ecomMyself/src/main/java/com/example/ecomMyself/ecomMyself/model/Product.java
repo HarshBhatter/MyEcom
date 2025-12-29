@@ -2,6 +2,7 @@ package com.example.ecomMyself.ecomMyself.model;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
@@ -13,7 +14,7 @@ public class Product {
     private String name;
     private String Type;
     private String fit;
-    private double price;
+    private BigDecimal price;
     private String description;
     private String gender;
     @OneToMany(mappedBy = "product")
@@ -25,12 +26,12 @@ public class Product {
         this.name="-";
         this.Type="-";
         this.fit="-";
-        this.price = 0;
+        this.price = BigDecimal.ZERO;
         this.description="-";
         gender="Bi";
     }
 
-    public Product(int id, String name, String type, String fit, List<Integer> size, int count, double price, String description,List<Product_colors> color,Byte[] picture) {
+    public Product(int id, String name, String type, String fit, List<Integer> size, int count, BigDecimal price, String description,List<Product_colors> color,Byte[] picture) {
         this.id = id;
         this.name = name;
         this.Type = type;
@@ -89,11 +90,11 @@ public class Product {
         this.fit = fit;
     }
 
-    public double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
