@@ -24,12 +24,6 @@ public interface Product_size_repo extends JpaRepository<Product_size,Integer> {
             int size,
             int qty
     );
-    @Modifying
-    @Query("DELETE FROM Product_size ps " +
-            "WHERE ps.size = :size " +
-            "AND ps.productColors.color = :color " +
-            "AND ps.productColors.product.id = :productId")
-    void deleteWhenStockOver(int productId, String color, int size);
 
     Optional<Product_size> findBySizeAndProductColors_ColorAndProductColors_Product_Id(int size, String color, int productid);
 }

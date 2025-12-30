@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class Products_Service {
@@ -25,5 +26,12 @@ public class Products_Service {
     public List<Product> getWomenAll() {
         List<Product> products=product_repo.findAllByGender("Female");
         return products;
+    }
+
+    public Product productById(int id) {
+        Optional<Product> p=product_repo.findById(id);
+        if(p.isEmpty())
+            throw new RuntimeException("");
+        return p.get();
     }
 }

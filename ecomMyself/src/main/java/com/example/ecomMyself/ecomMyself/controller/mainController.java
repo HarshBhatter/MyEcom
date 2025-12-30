@@ -113,4 +113,18 @@ public class mainController {
                     .body(e.getMessage());
         }
     }
+    @GetMapping("All/")
+    public ResponseEntity<?> ProductById(@RequestParam int id)
+    {
+        try {
+            Product products=products_service.productById(id);
+            return ResponseEntity.ok(products);
+        }
+        catch (Exception e)
+        {
+            return ResponseEntity
+                    .badRequest()
+                    .body("Product Not Found");
+        }
+    }
 }

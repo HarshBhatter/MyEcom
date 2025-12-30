@@ -5,10 +5,7 @@ import com.example.ecomMyself.ecomMyself.model.DTO.Order_item_request;
 import com.example.ecomMyself.ecomMyself.model.DTO.Order_item_response;
 import com.example.ecomMyself.ecomMyself.model.DTO.Order_request;
 import com.example.ecomMyself.ecomMyself.model.DTO.Order_response;
-import com.example.ecomMyself.ecomMyself.repository.Orders_repo;
-import com.example.ecomMyself.ecomMyself.repository.Product_Repo;
-import com.example.ecomMyself.ecomMyself.repository.Product_colors_repo;
-import com.example.ecomMyself.ecomMyself.repository.Product_size_repo;
+import com.example.ecomMyself.ecomMyself.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -33,9 +30,18 @@ public class Order_service {
     private Product_colors_repo productColorsRepo;
     @Autowired
     private Product_size_repo productSizeRepo;
+    @Autowired
+    private Cart_repo cartRepo;
     @Transactional
-    public void placeOrder(Order_request request)
+    public void placeOrder()
     {
+        List<Cart> c=cartRepo.findAllByUserId(0);
+        List<Order_item_request> orderItemRequestList=new ArrayList<>();
+        for(Cart items:c)
+        {
+            orderItemRequestList.add(new Order_item_request(items.getProductId(),items.getColor(),items.getSize(),items.getQuantity()));
+        }
+        Order_request request=new Order_request(orderItemRequestList);
         Orders o=new Orders();
 //        o.setUserId(principal.getUser().getId());
         BigDecimal total= BigDecimal.valueOf(0);
@@ -51,6 +57,13 @@ public class Order_service {
             Product product=productRepo.findById(oir.productid())
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
+            Optional<Product_size> productSize=productSizeRepo.findBySizeAndProductColors_ColorAndProductColors_Product_Id(oir.size(),oir.color(),oir.productid());
+
+            if(productSize.isEmpty())
+                throw new RuntimeException("Out Of Stock");
+            if(productSize.get().getQuantity()< oir.quantity())
+                throw new RuntimeException("Only "+productSize.get().getQuantity()+ " pieces are left for " + product.getName());
+
             oi2.setColor(oir.color());
             oi2.setSize(oir.size());
             oi2.setQuantity(oir.quantity());
@@ -65,31 +78,30 @@ public class Order_service {
                     oir.size(),
                     oir.quantity()
             );
-
-            int quantityLeft=(productSizeRepo.findBySizeAndProductColors_ColorAndProductColors_Product_Id(oir.size(), oir.color(), oir.productid())).orElseThrow(() -> new RuntimeException("Not Found")).getQuantity();
-            if(quantityLeft==0)
-            {
-                productSizeRepo.deleteWhenStockOver(
-                        oir.productid(),
-                        oir.color(),
-                        oir.size()
-                );
-            }
-
         }
         o.setTotal(total);
         o.setOrderItems(oi);
         ordersRepo.save(o);
+        cartRepo.deleteAllByUserId(0);
+
     }
 
 
 //    @Transactional
-//    public void placeOrder(Order_request request,UserPrincipal principal)
+//    public void placeOrder(UserPrincipal principal)
 //    {
+//        List<Cart> c=cartRepo.findAllByUserId(principal.getUser().getId());
+//        List<Order_item_request> orderItemRequestList=new ArrayList<>();
+//        for(Cart items:c)
+//        {
+//            orderItemRequestList.add(new Order_item_request(items.getProductId(),items.getColor(),items.getSize(),items.getQuantity()));
+//        }
+//        Order_request request=new Order_request(orderItemRequestList);
 //        Orders o=new Orders();
 //        o.setUserId(principal.getUser().getId());
 //        o.setOrderDate(LocalDate.now());
 //        o.setStatus("Order Placed");
+//        o.setUserId(principal.getUser().getId());
 //        List<Order_items> oi=new ArrayList<>();
 //        BigDecimal total=BigDecimal.ZERO;
 //        for(Order_item_request oir:request.orderItemRequests())
@@ -97,6 +109,13 @@ public class Order_service {
 //            Order_items oi2=new Order_items();
 //            Product product=productRepo.findById(oir.productid())
 //                .orElseThrow(() -> new RuntimeException("Product not found"));
+//
+//            Optional<Product_size> productSize=productSizeRepo.findBySizeAndProductColors_ColorAndProductColors_Product_Id(oir.size(),oir.color(),oir.productid());
+//
+//            if(productSize.isEmpty())
+//                throw new RuntimeException("Out Of Stock");
+//            if(productSize.get().getQuantity()< oir.quantity())
+//                throw new RuntimeException("Only "+productSize.get().getQuantity()+ " pieces are left for " + product.getName());
 //
 //            oi2.setColor(oir.color());
 //            oi2.setSize(oir.size());
@@ -106,27 +125,18 @@ public class Order_service {
 //            total=total.add((product.getPrice().multiply(BigDecimal.valueOf(oir.quantity()))));
 //            oi.add(oi2);
 //
-//            int updated = productSizeRepo.reduceStock(
-//                    oir.productid(),
-//                    oir.color(),
-//                    oir.size(),
-//                    oir.quantity()
-//            );
-//
-//            int quantityLeft=productSizeRepo.findBySizeAndProductColors_ColorAndProductColors_Product_Id(oir.size(),oir.color(),oir.productid());
-//            if(quantityLeft==0)
-//            {
-//                productSizeRepo.deleteWhenStockOver(
+//                int updated = productSizeRepo.reduceStock(
 //                        oir.productid(),
 //                        oir.color(),
-//                        oir.size()
+//                        oir.size(),
+//                        oir.quantity()
 //                );
-//            }
 //
 //        }
 //        o.setTotal(total);
 //        o.setOrderItems(oi);
 //        ordersRepo.save(o);
+//        cartRepo.deleteAllByUserId(principal.getUser().getId());
 //    }
     public List<Order_response> MyOrders() {
 
@@ -201,4 +211,79 @@ public class Order_service {
         Order_response orderResponse=new Order_response(orderId,status,date,orderItemResponseList,total);
         return orderResponse;
     }
+    @Transactional
+    public void AddToCart(Order_item_request orderItemRequest)
+    {
+        Cart cp=cartRepo.findByUserIdAndProductIdAndColorAndSize(0,orderItemRequest.productid(),orderItemRequest.color(),orderItemRequest.size());
+        Cart c= cp==null?new Cart():cp;
+        c.setUserId(0);
+        c.setColor(orderItemRequest.color());
+        c.setSize(orderItemRequest.size());
+        Optional<Product_size> productSize=productSizeRepo.findBySizeAndProductColors_ColorAndProductColors_Product_Id(orderItemRequest.size(),orderItemRequest.color(),orderItemRequest.productid());
+        if(productSize.isEmpty())
+            throw new RuntimeException("Out Of Stock");
+        c.setQuantity(c.getQuantity()+1);
+        int quantity_available=productSize.get().getQuantity();
+        if(c.getQuantity()>quantity_available)
+            throw new RuntimeException("Not Availaible");
+        c.setProductid(orderItemRequest.productid());
+        cartRepo.save(c);
+    }
+
+//    @Transactional
+//    public void AddToCart(UserPrincipal principal,Order_item_request orderItemRequest)
+//    {
+//        Cart cp=cartRepo.findByUserIdAndProductIdAndColorAndSize(principal.getUser().getId(),orderItemRequest.productid(),orderItemRequest.color(),orderItemRequest.size());
+//        Cart c= cp==null?new Cart():cp;
+//        c.setUserId(principal.getUser().getId());
+//        c.setColor(orderItemRequest.color());
+//        c.setSize(orderItemRequest.size());
+//        Optional<Product_size> productSize=productSizeRepo.findBySizeAndProductColors_ColorAndProductColors_Product_Id(orderItemRequest.size(),orderItemRequest.color(),orderItemRequest.productid());
+//        if(productSize.isEmpty())
+//            throw new RuntimeException("Out Of Stock");
+//        c.setQuantity(c.getQuantity()+1);
+//        int quantity_available=productSize.get().getQuantity();
+//        if(c.getQuantity()>quantity_available)
+//            throw new RuntimeException("Not Availaible");
+//        c.setProductid(orderItemRequest.productid());
+//        cartRepo.save(c);
+//    }
+    @Transactional
+    public void RemoveFromCart(Order_item_request orderItemRequest) {
+        Cart cp=cartRepo.findByUserIdAndProductIdAndColorAndSize(0,orderItemRequest.productid(),orderItemRequest.color(),orderItemRequest.size());
+        if(cp==null)
+            throw new RuntimeException("Not in Cart");
+        Cart c=cp;
+        c.setUserId(0);
+        c.setColor(orderItemRequest.color());
+        c.setSize(orderItemRequest.size());
+        if(c.getQuantity()==0)
+            throw new RuntimeException("Not Applicable");
+        c.setQuantity(c.getQuantity()-1);
+        if(c.getQuantity()==0)
+            cartRepo.delete(c);
+        else {
+            c.setProductid(orderItemRequest.productid());
+            cartRepo.save(c);
+        }
+    }
+//    @Transactional
+//    public void RemoveFromCart(UserPrincipal principal,Order_item_request orderItemRequest) {
+//        Cart cp=cartRepo.findByUserIdAndProductIdAndColorAndSize(principal.getUser().getId(),orderItemRequest.productid(),orderItemRequest.color(),orderItemRequest.size());
+//        if(cp==null)
+//            throw new RuntimeException("Not in Cart");
+//        Cart c=cp;
+//        c.setUserId(principal.getUser().getId());
+//        c.setColor(orderItemRequest.color());
+//        c.setSize(orderItemRequest.size());
+//        if(c.getQuantity()==0)
+//            throw new RuntimeException("Not Applicable");
+//        c.setQuantity(c.getQuantity()-1);
+//        if(c.getQuantity()==0)
+//            cartRepo.delete(c);
+//        else {
+//            c.setProductid(orderItemRequest.productid());
+//            cartRepo.save(c);
+//        }
+//    }
 }

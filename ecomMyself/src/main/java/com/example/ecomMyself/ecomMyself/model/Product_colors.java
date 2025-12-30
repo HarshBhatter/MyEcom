@@ -2,9 +2,16 @@ package com.example.ecomMyself.ecomMyself.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.hibernate.mapping.UniqueKey;
+
 import java.util.List;
 
 @Entity
+@Table(
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"product_id", "color"})
+        }
+)
 public class Product_colors {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)

@@ -4,6 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
+@Table(
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"product_colors_id", "size"})
+        }
+)
 public class Product_size {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
