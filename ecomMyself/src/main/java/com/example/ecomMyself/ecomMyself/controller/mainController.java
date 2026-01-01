@@ -7,6 +7,7 @@ import com.example.ecomMyself.ecomMyself.model.Users;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -49,6 +50,8 @@ public class mainController {
 
     @PostMapping("login")
     public String login(@RequestBody Users user) {
+        if(user.getPassword()==null)
+            throw new BadCredentialsException("Password is required");
         System.out.println("Login");
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
@@ -61,7 +64,7 @@ public class mainController {
             return "Login Failed";
     }
 
-    @PostMapping("custom_logout")
+    @PostMapping("logout")
     public String logout(@AuthenticationPrincipal UserPrincipal principal)
     {
         if(principal!=null) {

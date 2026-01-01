@@ -23,6 +23,8 @@ public class securityConfigure {
     private MyUserDetailService userDetailsService;
     @Autowired
     private JwtFilter jwtFilter;
+    @Autowired
+    OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
     @Bean
     public AuthenticationProvider authProvider() {
         DaoAuthenticationProvider provider=new DaoAuthenticationProvider();
@@ -34,20 +36,23 @@ public class securityConfigure {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http.csrf(customizer -> customizer.disable())
-                .authorizeHttpRequests(request -> request.anyRequest().permitAll())
-//                .httpBasic(Customizer.withDefaults())
-//                .oauth2Login(Customizer.withDefaults())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
-//                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/oauth2/**", "/login/**").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .oauth2Login(oauth -> oauth
+                        .successHandler(oAuth2LoginSuccessHandler)
+                )
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
-
+//
 //        http.csrf(customizer -> customizer.disable())
-//              .authorizeHttpRequests(request -> request.requestMatchers("/","/create_account","/login").permitAll().anyRequest().authenticated())
+//              .authorizeHttpRequests(request -> request.requestMatchers("/","create_account","login").permitAll().anyRequest().authenticated())
 //                .httpBasic(Customizer.withDefaults())
-//                .oauth2Login(Customizer.withDefaults())
+////                .oauth2Login(Customizer.withDefaults())
 //                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
 //                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-//
 
 
         return http.build();
