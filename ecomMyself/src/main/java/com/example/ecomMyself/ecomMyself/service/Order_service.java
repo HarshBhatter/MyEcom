@@ -1,10 +1,7 @@
 package com.example.ecomMyself.ecomMyself.service;
 
 import com.example.ecomMyself.ecomMyself.model.*;
-import com.example.ecomMyself.ecomMyself.model.DTO.Order_item_request;
-import com.example.ecomMyself.ecomMyself.model.DTO.Order_item_response;
-import com.example.ecomMyself.ecomMyself.model.DTO.Order_request;
-import com.example.ecomMyself.ecomMyself.model.DTO.Order_response;
+import com.example.ecomMyself.ecomMyself.model.DTO.*;
 import com.example.ecomMyself.ecomMyself.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +29,22 @@ public class Order_service {
     private Product_size_repo productSizeRepo;
     @Autowired
     private Cart_repo cartRepo;
+
+    public Cart_response[] cart(int id) {
+        List<Cart> list= cartRepo.findAllByUserId(id);
+        Cart_response cartResponse[]=new Cart_response[list.size()];
+        for(int i=0;i< list.size();i++)
+        {
+            Cart c=list.get(i);
+            Optional<Product> product=productRepo.findById(c.getProductId());
+            String name=product.get().getName();
+            BigDecimal total=BigDecimal.valueOf(c.getQuantity()).multiply(product.get().getPrice());
+
+            cartResponse[i]=new Cart_response(product.get().getId(),name,c.getColor(),c.getSize(),c.getQuantity(),total);
+        }
+        return cartResponse;
+    }
+
     @Transactional
     public void placeOrder()
     {
@@ -156,10 +169,10 @@ public class Order_service {
                 String productName=o2.getProduct().getName();
                 int quantity=o2.getQuantity();
                 BigDecimal total2=o2.getProduct().getPrice().multiply(BigDecimal.valueOf(quantity));
-                Order_item_response orderItemResponse=new Order_item_response(productName,quantity,total2);
+                Order_item_response orderItemResponse=new Order_item_response(productName,quantity,o2.getColor(),o2.getSize(),total2);
                 orderItemResponseList.add(orderItemResponse);
             }
-            Order_response orderResponse=new Order_response(orderid,status,orderDate,orderItemResponseList,total);
+            Order_response orderResponse=new Order_response(o.getId(),orderid,status,orderDate,orderItemResponseList,total);
             orderResponseList.add(orderResponse);
         }
         return (orderResponseList);
@@ -205,10 +218,10 @@ public class Order_service {
             String productName=o2.getProduct().getName();
             int quantity=o2.getQuantity();
             BigDecimal total2=o2.getProduct().getPrice().multiply(BigDecimal.valueOf(quantity));
-            Order_item_response orderItemResponse=new Order_item_response(productName,quantity,total2);
+            Order_item_response orderItemResponse=new Order_item_response(productName,quantity,o2.getColor(),o2.getSize(),total2);
             orderItemResponseList.add(orderItemResponse);
         }
-        Order_response orderResponse=new Order_response(orderId,status,date,orderItemResponseList,total);
+        Order_response orderResponse=new Order_response(id,orderId,status,date,orderItemResponseList,total);
         return orderResponse;
     }
     @Transactional
@@ -225,7 +238,7 @@ public class Order_service {
         c.setQuantity(c.getQuantity()+1);
         int quantity_available=productSize.get().getQuantity();
         if(c.getQuantity()>quantity_available)
-            throw new RuntimeException("Not Availaible");
+            throw new RuntimeException("Limited quantity available");
         c.setProductid(orderItemRequest.productid());
         cartRepo.save(c);
     }

@@ -1,17 +1,21 @@
 package com.example.ecomMyself.ecomMyself.controller;
 
+import com.example.ecomMyself.ecomMyself.model.Cart;
+import com.example.ecomMyself.ecomMyself.model.DTO.Cart_response;
 import com.example.ecomMyself.ecomMyself.model.DTO.Order_item_request;
 import com.example.ecomMyself.ecomMyself.model.DTO.Order_request;
 import com.example.ecomMyself.ecomMyself.model.DTO.Order_response;
 import com.example.ecomMyself.ecomMyself.service.Order_service;
 import com.example.ecomMyself.ecomMyself.service.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5173")
 public class OrderController {
     @Autowired
     private Order_service order_service;
@@ -39,7 +43,7 @@ public class OrderController {
 //    {
 //        return order_service.MyOrders(principal);
 //    }
-    @GetMapping("MyOrders/{id}")
+    @GetMapping("MyOrders/")
     public Order_response myOrderId(@RequestParam int id)
     {
         return order_service.myOrderId(id);
@@ -68,4 +72,10 @@ public class OrderController {
 //        order_service.RemoveFromCart(principal,orderItemRequest);
 //        return "Removed From cart";
 //    }
+    @GetMapping("Cart")
+    public ResponseEntity<?> cart(@AuthenticationPrincipal UserPrincipal principal)
+    {
+        Cart_response list[]= order_service.cart(0);
+        return ResponseEntity.ok(list);
+    }
 }

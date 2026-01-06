@@ -2,10 +2,12 @@ package com.example.ecomMyself.ecomMyself.model.DTO;
 
 import java.math.BigDecimal;
 
-public record Order_item_response(
-        String productName,
-        int quantity,
+public record Cart_response (
+        int productId,
+        String name,
         String color,
         int size,
+        int quantity,
         BigDecimal total
-) {}
+){
+}

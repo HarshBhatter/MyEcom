@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface Orders_repo extends JpaRepository<Orders,Integer> {
-
+public interface Orders_repo extends JpaRepository<Orders,Integer>
+{
     List<Orders> findAllByUserId(int id);
 }

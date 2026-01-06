@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public record Order_response(
+    long id,
     String orderId,
     String status,
     LocalDate orderDate,
