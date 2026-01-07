@@ -1,0 +1,36 @@
+table{
+    width: 100%;
+    border-collapse: collapse;
+}
+.Cart .header{
+    font-weight: bold;
+    font-size: 150%;   
+    margin-bottom: 10px;
+    color: black;
+}
+.Cart .header .serial{
+    width: 10%;
+}
+.Cart th, .Cart td{
+    border: 1px solid black;
+    padding: 8px;
+    text-align: center;
+}
+.PlaceOrder{
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    transition: transform 0.15s ease;
+}
+.PlaceOrder:active {
+  transform: scale(0.95); /* zoom out */
+}
+.PlaceOrder button:hover{
+    background-color: rgb(73, 60, 41);
+}
+.Cart .quantity{
+    display: flex;
+    justify-content: space-between; 
+    border: none;
+    border-bottom: 1px solid black;
+}

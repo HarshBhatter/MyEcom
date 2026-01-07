@@ -1,0 +1,88 @@
+.OuterBox{
+    /* background-color: violet; */
+    height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.OuterBox .image{
+    /* border-right: 2px solid black; */
+    /* background-color: white; */
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;    
+}
+.OuterBox .details{
+    /* background-color: orange; */
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.OuterBox .details .product-name{
+    font-size: 170%;
+    font-weight: bold;
+}
+.OuterBox .details .product-price{
+    font-size: 130%;
+    color: green;
+}
+.OuterBox .details .product-description{
+    font-size: 110%;
+}
+.OuterBox .details .add-to-cart-button{
+    padding: 10px;
+    background-color: black;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 110%;
+    text-align: center;
+    width: 100%;
+}
+.OuterBox .details .add-to-cart-button:hover{
+    background-color: grey;
+}
+.OuterBox .add-to-cart-button:active{
+    transform: scale(0.95);
+}
+.OuterBox .details .colors {
+    display: flex;
+    gap: 2%;
+}
+.OuterBox .details .colors .color-box{
+    margin-top: auto;
+    margin-bottom: auto;
+    gap: 2%;
+    width: 13px;
+    height : 13px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 1px solid rgb(197, 171, 171);
+}
+.product-price svg{
+    stroke: currentcolor;
+    fill: currentcolor;
+    padding-top: 1%;
+    height: 1em;
+    width: 1em;
+}
+.colors{
+    margin: 1.1%;
+}
+.colors .size-box{
+    font-size: 12px;
+    padding: 2px 5px;
+    gap: 2%;
+    cursor: pointer;
+    border: 1px solid rgb(197, 171, 171);
+}
+.colors .size-box:hover , .colors .color-box:hover{
+    border: 1px solid rgb(255, 255, 255);;
+}
+

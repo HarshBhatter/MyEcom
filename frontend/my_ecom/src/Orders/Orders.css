@@ -1,0 +1,19 @@
+/* .AllOrders{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 20px;
+}
+.AllOrders .IndividualOrder{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+.AllOrders .IndividualOrder .header{
+    font-weight: bold;
+    font-size: 150%;   
+    margin-bottom: 10px;
+    color: black;
+} */

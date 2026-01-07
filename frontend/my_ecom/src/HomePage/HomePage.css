@@ -1,0 +1,46 @@
+body{
+    background-color: rgb(72, 59, 59)
+}
+.Categories{
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+
+    border-radius: 10px;  
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+}
+.men{
+    padding: 20px;
+    text-align: center;
+    background-color: #859be3;
+    border-radius: 10px;
+    width: 50%;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+}
+.men:active,.women:active {
+  transform: scale(0.95); /* zoom out */
+}
+.men:hover{
+    background-color: #6b7fc4;
+}
+.women{
+    padding: 20px;
+    text-align: center;
+    background-color: #df818c;
+    border-radius: 10px;
+    width: 50%;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+}
+.women:hover{
+    background-color: #c46b73;
+}
+.header{
+    color: rgb(124, 74, 13);
+    padding: 2%;
+    text-align: center;
+    font-size: 200%;
+}

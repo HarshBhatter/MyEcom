@@ -1,0 +1,14 @@
+.AboutUs .header{
+    border-bottom: 2px solid rgb(22, 18, 13);
+    ;
+}
+.AboutUs div{
+    display: flex;
+    justify-content: center;
+}
+.AboutUs .info{
+    height: 800px
+    /* margin-top: 2%;
+    font-size: 120%;
+    text-align: center; */
+}

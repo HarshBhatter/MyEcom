@@ -1,0 +1,28 @@
+.ContactUs {
+    border: 2px solid rgb(22, 18, 13);
+
+    /* box-shadow
+    : 5px 5px 5px grey; */
+}
+.ContactUs .header{
+    border-bottom: 2px solid rgb(22, 18, 13);
+}
+.ContactUs .info{
+    margin-top: 2%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px; 
+    font-size: 120%;
+}
+
+.ContactUs a , .ContactUs a:visited{
+    color: black;
+}
+.ContactUs a:hover{
+    color: rgb(85, 69, 51);
+    text-decoration: underline;
+}
+.ContactUs .links{
+    display: flex;
+    gap: 2%;
+}
