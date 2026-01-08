@@ -32,8 +32,8 @@ public class User_service {
         Users user=user_repo.findByUsername(username);
         user.setVersion(user.getVersion()+1);
         user_repo.save(user);
-        em.flush();
-        em.refresh(user);
+//        em.flush();
+//        em.refresh(user);
     }
 
     public Users findByUserName(String username)

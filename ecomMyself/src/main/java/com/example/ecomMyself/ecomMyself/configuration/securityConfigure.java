@@ -37,16 +37,15 @@ public class securityConfigure {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.cors(Customizer.withDefaults())
                 .csrf(customizer -> customizer.disable())
-                .authorizeHttpRequests(auth->auth.anyRequest().permitAll());
-//                .authorizeHttpRequests(auth -> auth
-////                        .requestMatchers("/","/oauth2/**", "/login/**").permitAll()
-//                        .anyRequest().authenticated()
-//                );
-//                .oauth2Login(oauth -> oauth
-//                        .successHandler(oAuth2LoginSuccessHandler)
-//                )
-//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
-//                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/PlaceOrder/**","/MyOrders/**" , "/AddToCart/**","/RemoveFromCart/**" , "/Cart/**","/Logout/**").authenticated()
+                        .anyRequest().permitAll()
+                )
+                .oauth2Login(oauth -> oauth
+                        .successHandler(oAuth2LoginSuccessHandler)
+                )
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
 //
 //        http.csrf(customizer -> customizer.disable())

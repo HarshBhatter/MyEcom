@@ -31,7 +31,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         if (!user_repo.existsByUsername(email)) {
             user = new Users();
             user.setUsername(email);
-            user.setVersion(1); // default version
+            user.setVersion(0); // default version
             user_repo.save(user);
         } else {
             user = user_repo.findByUsername(email);
@@ -39,7 +39,11 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
 
         String token = jwtService.generateToken(user.getUsername(), user.getVersion());
 
-        response.setContentType("application/json");
-        response.getWriter().write("{ \"token\": \"Bearer " + token + "\" }");
+//        response.setContentType("application/json");
+//        response.getWriter().write("{ \"token\": \"Bearer " + token + "\" }");
+//        response.setContentType("text/plain"); //as custom is also sending plain data
+//        response.getWriter().write(token); // no "Bearer " prefix
+        response.sendRedirect("http://localhost:5173/login/Oauth?token=" + token);
+
     }
 }

@@ -65,7 +65,7 @@ public class mainController {
             return "Login Failed";
     }
 
-    @PostMapping("logout")
+    @PostMapping("Logout")// 'l' will cause problem as spring security has a method of logout so 'L'
     public String logout(@AuthenticationPrincipal UserPrincipal principal)
     {
         if(principal!=null) {
